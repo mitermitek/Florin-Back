@@ -55,6 +55,8 @@ jobs:
 
       - name: Deploy on server
         uses: appleboy/ssh-action@v1.2.2
+        env:
+          USER: ${{ secrets.VPS_USERNAME }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
@@ -63,9 +65,10 @@ jobs:
           script: |
             rm -rf /var/www/florin-back/.git
 
-            chmod -R 755 /var/www/florin-back
-            chmod -R 775 /var/www/florin-back/storage
-            chmod -R 775 /var/www/florin-back/bootstrap/cache
+            sudo chown -R $USER:www-data /var/www/florin-back/storage
+            sudo chown -R $USER:www-data /var/www/florin-back/bootstrap/cache
+            sudo chmod -R 775 /var/www/florin-back/storage
+            sudo chmod -R 775 /var/www/florin-back/bootstrap/cache
 
             cd /var/www/florin-back
             php artisan config:cache
