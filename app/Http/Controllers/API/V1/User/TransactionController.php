@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\V1\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\V1\User\StoreTransactionRequest;
 use App\Http\Requests\API\V1\User\UpdateTransactionRequest;
+use App\Http\Resources\Transaction\TransactionResource;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
@@ -16,7 +17,7 @@ class TransactionController extends Controller
     public function index(Request $request)
     {
         return $this->response(200, 'Transactions retrieved successfully', [
-            'transactions' => $request->user()->transactions,
+            'transactions' => TransactionResource::collection($request->user()->transactions)
         ]);
     }
 
@@ -31,7 +32,7 @@ class TransactionController extends Controller
         $transaction->save();
 
         return $this->response(201, 'Transaction created successfully', [
-            'transaction' => $transaction,
+            'transaction' => new TransactionResource($transaction)
         ]);
     }
 
@@ -44,7 +45,7 @@ class TransactionController extends Controller
         }
 
         return $this->response(200, 'Transaction retrieved successfully', [
-            'transaction' => $transaction,
+            'transaction' => new TransactionResource($transaction)
         ]);
     }
 
@@ -63,7 +64,7 @@ class TransactionController extends Controller
         $transaction->save();
 
         return $this->response(200, 'Transaction updated successfully', [
-            'transaction' => $transaction,
+            'transaction' => new TransactionResource($transaction)
         ]);
     }
 

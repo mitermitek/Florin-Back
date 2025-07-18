@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\V1\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\V1\Auth\LoginRequest;
+use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use App\Traits\ApiResponse;
 use Illuminate\Support\Facades\Hash;
@@ -24,7 +25,7 @@ class LoginController extends Controller
         $token = $user->createToken('FLR_PAT')->plainTextToken;
 
         return $this->response(200, 'Login successful', [
-            'user' => $user,
+            'user' => new UserResource($user),
             'token' => $token,
         ]);
     }

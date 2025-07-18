@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\V1\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\V1\Auth\RegisterRequest;
+use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use App\Traits\ApiResponse;
 use Illuminate\Support\Facades\Hash;
@@ -23,7 +24,7 @@ class RegisterController extends Controller
         $user = User::create($data);
 
         return $this->response(201, 'User registered successfully', [
-            'user' => $user
+            'user' => new UserResource($user)
         ]);
     }
 }

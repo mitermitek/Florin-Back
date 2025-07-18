@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\V1\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\V1\User\StoreCategoryRequest;
 use App\Http\Requests\API\V1\User\UpdateCategoryRequest;
+use App\Http\Resources\Category\CategoryResource;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 
@@ -15,14 +16,14 @@ class CategoryController extends Controller
     public function index(Request $request)
     {
         return $this->response(200, 'Categories retrieved successfully', [
-            'categories' => $request->user()->categories,
+            'categories' => CategoryResource::collection($request->user()->categories)
         ]);
     }
 
     public function store(StoreCategoryRequest $request)
     {
         return $this->response(201, 'Category created successfully', [
-            'category' => $request->user()->categories()->create($request->validated()),
+            'category' => new CategoryResource($request->user()->categories()->create($request->validated()))
         ]);
     }
 
@@ -35,7 +36,7 @@ class CategoryController extends Controller
         }
 
         return $this->response(200, 'Category retrieved successfully', [
-            'category' => $category,
+            'category' => new CategoryResource($category)
         ]);
     }
 
@@ -50,7 +51,7 @@ class CategoryController extends Controller
         $category->update($request->validated());
 
         return $this->response(200, 'Category updated successfully', [
-            'category' => $category,
+            'category' => new CategoryResource($category)
         ]);
     }
 
