@@ -5,16 +5,19 @@ namespace App\Http\Controllers\API\V1\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\V1\User\StoreTransactionRequest;
 use App\Http\Requests\API\V1\User\UpdateTransactionRequest;
-use App\Models\Transaction;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Response;
 
 class TransactionController extends Controller
 {
+    use ApiResponse;
+
     public function index(Request $request)
     {
-        return Response::json($request->user()->transactions, 200);
+        return $this->response(200, 'Transactions retrieved successfully', [
+            'transactions' => $request->user()->transactions,
+        ]);
     }
 
     public function store(StoreTransactionRequest $request)
@@ -27,7 +30,9 @@ class TransactionController extends Controller
         $transaction->category()->associate($data['category_id']);
         $transaction->save();
 
-        return Response::json($transaction, 201);
+        return $this->response(201, 'Transaction created successfully', [
+            'transaction' => $transaction,
+        ]);
     }
 
     public function show(Request $request, int $id)
@@ -35,10 +40,12 @@ class TransactionController extends Controller
         $transaction = $request->user()->transactions()->find($id);
 
         if (!$transaction) {
-            return Response::json(['message' => 'Transaction not found'], 404);
+            return $this->response(404, 'Transaction not found');
         }
 
-        return Response::json($transaction, 200);
+        return $this->response(200, 'Transaction retrieved successfully', [
+            'transaction' => $transaction,
+        ]);
     }
 
     public function update(UpdateTransactionRequest $request, int $id)
@@ -46,7 +53,7 @@ class TransactionController extends Controller
         $transaction = $request->user()->transactions()->find($id);
 
         if (!$transaction) {
-            return Response::json(['message' => 'Transaction not found'], 404);
+            return $this->response(404, 'Transaction not found');
         }
 
         $data = $request->validated();
@@ -55,7 +62,9 @@ class TransactionController extends Controller
         $transaction->category()->associate($data['category_id']);
         $transaction->save();
 
-        return Response::json($transaction, 200);
+        return $this->response(200, 'Transaction updated successfully', [
+            'transaction' => $transaction,
+        ]);
     }
 
     public function destroy(Request $request, int $id)
@@ -63,11 +72,11 @@ class TransactionController extends Controller
         $transaction = $request->user()->transactions()->find($id);
 
         if (!$transaction) {
-            return Response::json(['message' => 'Transaction not found'], 404);
+            return $this->response(404, 'Transaction not found');
         }
 
         $transaction->delete();
 
-        return Response::json(null, 204);
+        return $this->response(200, 'Transaction deleted successfully');
     }
 }

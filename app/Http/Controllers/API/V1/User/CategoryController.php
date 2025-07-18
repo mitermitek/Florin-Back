@@ -5,19 +5,25 @@ namespace App\Http\Controllers\API\V1\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\V1\User\StoreCategoryRequest;
 use App\Http\Requests\API\V1\User\UpdateCategoryRequest;
+use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Response;
 
 class CategoryController extends Controller
 {
+    use ApiResponse;
+
     public function index(Request $request)
     {
-        return Response::json($request->user()->categories, 200);
+        return $this->response(200, 'Categories retrieved successfully', [
+            'categories' => $request->user()->categories,
+        ]);
     }
 
     public function store(StoreCategoryRequest $request)
     {
-        return Response::json($request->user()->categories()->create($request->validated()), 201);
+        return $this->response(201, 'Category created successfully', [
+            'category' => $request->user()->categories()->create($request->validated()),
+        ]);
     }
 
     public function show(Request $request, int $id)
@@ -25,10 +31,12 @@ class CategoryController extends Controller
         $category = $request->user()->categories()->find($id);
 
         if (!$category) {
-            return Response::json(['message' => 'Category not found'], 404);
+            return $this->response(404, 'Category not found');
         }
 
-        return Response::json($category, 200);
+        return $this->response(200, 'Category retrieved successfully', [
+            'category' => $category,
+        ]);
     }
 
     public function update(UpdateCategoryRequest $request, int $id)
@@ -36,12 +44,14 @@ class CategoryController extends Controller
         $category = $request->user()->categories()->find($id);
 
         if (!$category) {
-            return Response::json(['message' => 'Category not found'], 404);
+            return $this->response(404, 'Category not found');
         }
 
         $category->update($request->validated());
 
-        return Response::json($category, 200);
+        return $this->response(200, 'Category updated successfully', [
+            'category' => $category,
+        ]);
     }
 
     public function destroy(Request $request, int $id)
@@ -49,11 +59,11 @@ class CategoryController extends Controller
         $category = $request->user()->categories()->find($id);
 
         if (!$category) {
-            return Response::json(['message' => 'Category not found'], 404);
+            return $this->response(404, 'Category not found');
         }
 
         $category->delete();
 
-        return Response::json(null, 204);
+        return $this->response(200, 'Category deleted successfully');
     }
 }
