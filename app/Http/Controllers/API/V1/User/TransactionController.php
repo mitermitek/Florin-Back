@@ -5,44 +5,34 @@ namespace App\Http\Controllers\API\V1\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\API\V1\User\StoreTransactionRequest;
 use App\Http\Requests\API\V1\User\UpdateTransactionRequest;
-use App\Services\CategoryService;
-use App\Services\TransactionService;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Response;
 
 class TransactionController extends Controller
 {
-    public function __construct(
-        private TransactionService $transactionService,
-        private CategoryService $categoryService
-    ) {}
-
     public function index(Request $request)
     {
-        $userId = $request->user()->id;
-        $transactions = $this->transactionService->getAllByUserId($userId);
-
-        return Response::json($transactions, 200);
+        return Response::json($request->user()->transactions, 200);
     }
 
     public function store(StoreTransactionRequest $request)
     {
         $data = $request->validated();
-        $category = $this->categoryService->findByCategoryIdAndUserId($data['category_id'], $request->user()->id);
 
-        if (!$category) {
-            return Response::json(['message' => 'Category not found'], 404);
-        }
-
-        $transaction = $this->transactionService->create($data, $request->user(), $category);
+        $transaction = $request->user()->transactions()->make(
+            Arr::except($data, 'category_id')
+        );
+        $transaction->category()->associate($data['category_id']);
+        $transaction->save();
 
         return Response::json($transaction, 201);
     }
 
     public function show(Request $request, int $id)
     {
-        $userId = $request->user()->id;
-        $transaction = $this->transactionService->findByTransactionIdAndUserId($id, $userId);
+        $transaction = $request->user()->transactions()->find($id);
 
         if (!$transaction) {
             return Response::json(['message' => 'Transaction not found'], 404);
@@ -53,35 +43,30 @@ class TransactionController extends Controller
 
     public function update(UpdateTransactionRequest $request, int $id)
     {
-        $userId = $request->user()->id;
-        $transaction = $this->transactionService->findByTransactionIdAndUserId($id, $userId);
+        $transaction = $request->user()->transactions()->find($id);
 
         if (!$transaction) {
             return Response::json(['message' => 'Transaction not found'], 404);
         }
 
         $data = $request->validated();
-        $category = $this->categoryService->findByCategoryIdAndUserId($data['category_id'], $userId);
 
-        if (!$category) {
-            return Response::json(['message' => 'Category not found'], 404);
-        }
-
-        $this->transactionService->update($transaction, $data, $category);
+        $transaction->fill(Arr::except($data, 'category_id'));
+        $transaction->category()->associate($data['category_id']);
+        $transaction->save();
 
         return Response::json($transaction, 200);
     }
 
     public function destroy(Request $request, int $id)
     {
-        $userId = $request->user()->id;
-        $transaction = $this->transactionService->findByTransactionIdAndUserId($id, $userId);
+        $transaction = $request->user()->transactions()->find($id);
 
         if (!$transaction) {
             return Response::json(['message' => 'Transaction not found'], 404);
         }
 
-        $this->transactionService->delete($transaction);
+        $transaction->delete();
 
         return Response::json(null, 204);
     }
