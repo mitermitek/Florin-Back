@@ -15,16 +15,12 @@ class CategoryController extends Controller
 
     public function index(Request $request)
     {
-        return $this->response(200, 'Categories retrieved successfully', [
-            'categories' => CategoryResource::collection($request->user()->categories)
-        ]);
+        return $this->response(200, CategoryResource::collection($request->user()->categories));
     }
 
     public function store(StoreCategoryRequest $request)
     {
-        return $this->response(201, 'Category created successfully', [
-            'category' => new CategoryResource($request->user()->categories()->create($request->validated()))
-        ]);
+        return $this->response(201, new CategoryResource($request->user()->categories()->create($request->validated())));
     }
 
     public function show(Request $request, int $id)
@@ -32,12 +28,10 @@ class CategoryController extends Controller
         $category = $request->user()->categories()->find($id);
 
         if (!$category) {
-            return $this->response(404, 'Category not found');
+            return $this->response(404);
         }
 
-        return $this->response(200, 'Category retrieved successfully', [
-            'category' => new CategoryResource($category)
-        ]);
+        return $this->response(200, new CategoryResource($category));
     }
 
     public function update(UpdateCategoryRequest $request, int $id)
@@ -45,14 +39,12 @@ class CategoryController extends Controller
         $category = $request->user()->categories()->find($id);
 
         if (!$category) {
-            return $this->response(404, 'Category not found');
+            return $this->response(404);
         }
 
         $category->update($request->validated());
 
-        return $this->response(200, 'Category updated successfully', [
-            'category' => new CategoryResource($category)
-        ]);
+        return $this->response(200, new CategoryResource($category));
     }
 
     public function destroy(Request $request, int $id)
@@ -60,11 +52,11 @@ class CategoryController extends Controller
         $category = $request->user()->categories()->find($id);
 
         if (!$category) {
-            return $this->response(404, 'Category not found');
+            return $this->response(404);
         }
 
         $category->delete();
 
-        return $this->response(200, 'Category deleted successfully');
+        return $this->response(204);
     }
 }

@@ -19,12 +19,12 @@ class LoginController extends Controller
         $user = User::where('email', $credentials['email'])->first();
 
         if (!$user || !Hash::check($credentials['password'], $user->password)) {
-            return $this->response(401, 'Invalid credentials');
+            return $this->response(401);
         }
 
         $token = $user->createToken('FLR_PAT')->plainTextToken;
 
-        return $this->response(200, 'Login successful', [
+        return $this->response(200, [
             'user' => new UserResource($user),
             'token' => $token,
         ]);

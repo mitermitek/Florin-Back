@@ -16,9 +16,7 @@ class TransactionController extends Controller
 
     public function index(Request $request)
     {
-        return $this->response(200, 'Transactions retrieved successfully', [
-            'transactions' => TransactionResource::collection($request->user()->transactions)
-        ]);
+        return $this->response(200, TransactionResource::collection($request->user()->transactions));
     }
 
     public function store(StoreTransactionRequest $request)
@@ -31,9 +29,7 @@ class TransactionController extends Controller
         $transaction->category()->associate($data['category_id']);
         $transaction->save();
 
-        return $this->response(201, 'Transaction created successfully', [
-            'transaction' => new TransactionResource($transaction)
-        ]);
+        return $this->response(201, new TransactionResource($transaction));
     }
 
     public function show(Request $request, int $id)
@@ -41,12 +37,10 @@ class TransactionController extends Controller
         $transaction = $request->user()->transactions()->find($id);
 
         if (!$transaction) {
-            return $this->response(404, 'Transaction not found');
+            return $this->response(404);
         }
 
-        return $this->response(200, 'Transaction retrieved successfully', [
-            'transaction' => new TransactionResource($transaction)
-        ]);
+        return $this->response(200, new TransactionResource($transaction));
     }
 
     public function update(UpdateTransactionRequest $request, int $id)
@@ -54,7 +48,7 @@ class TransactionController extends Controller
         $transaction = $request->user()->transactions()->find($id);
 
         if (!$transaction) {
-            return $this->response(404, 'Transaction not found');
+            return $this->response(404);
         }
 
         $data = $request->validated();
@@ -63,9 +57,7 @@ class TransactionController extends Controller
         $transaction->category()->associate($data['category_id']);
         $transaction->save();
 
-        return $this->response(200, 'Transaction updated successfully', [
-            'transaction' => new TransactionResource($transaction)
-        ]);
+        return $this->response(200, new TransactionResource($transaction));
     }
 
     public function destroy(Request $request, int $id)
@@ -73,11 +65,11 @@ class TransactionController extends Controller
         $transaction = $request->user()->transactions()->find($id);
 
         if (!$transaction) {
-            return $this->response(404, 'Transaction not found');
+            return $this->response(404);
         }
 
         $transaction->delete();
 
-        return $this->response(200, 'Transaction deleted successfully');
+        return $this->response(204);
     }
 }

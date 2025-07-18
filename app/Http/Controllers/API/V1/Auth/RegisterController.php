@@ -23,8 +23,6 @@ class RegisterController extends Controller
 
         $user = User::create($data);
 
-        return $this->response(201, 'User registered successfully', [
-            'user' => new UserResource($user)
-        ]);
+        return $this->response(201, new UserResource($user));
     }
 }
