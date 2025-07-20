@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\V1\Auth\LoginController;
+use App\Http\Controllers\API\V1\Auth\LogoutController;
 use App\Http\Controllers\API\V1\Auth\RegisterController;
 use App\Http\Controllers\API\V1\User\CategoryController as UserCategoryController;
 use App\Http\Controllers\API\V1\User\TransactionController as UserTransactionController;
@@ -10,6 +11,7 @@ Route::prefix('v1')->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('register', RegisterController::class);
         Route::post('login', LoginController::class);
+        Route::delete('logout', LogoutController::class)->middleware('auth:sanctum');
     });
 
     Route::middleware('auth:sanctum')->group(function () {
