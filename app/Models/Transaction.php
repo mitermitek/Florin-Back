@@ -26,6 +26,11 @@ class Transaction extends Model
         ];
     }
 
+    public function getDateAttribute($value)
+    {
+        return $this->asDate($value)->format('Y-m-d');
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
