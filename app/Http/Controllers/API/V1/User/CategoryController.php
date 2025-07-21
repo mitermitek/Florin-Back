@@ -15,7 +15,7 @@ class CategoryController extends Controller
 
     public function index(Request $request)
     {
-        return $this->response(200, CategoryResource::collection($request->user()->categories));
+        return $this->response(200, CategoryResource::collection($request->user()->categories()->orderBy('name')->get()));
     }
 
     public function store(StoreCategoryRequest $request)

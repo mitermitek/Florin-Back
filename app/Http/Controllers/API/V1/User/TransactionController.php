@@ -16,7 +16,7 @@ class TransactionController extends Controller
 
     public function index(Request $request)
     {
-        return $this->response(200, TransactionResource::collection($request->user()->transactions));
+        return $this->response(200, TransactionResource::collection($request->user()->transactions()->orderByDesc('date')->get()));
     }
 
     public function store(StoreTransactionRequest $request)
