@@ -19,7 +19,7 @@ class CategoryController extends Controller
 
         // Filter by name (partial search)
         if ($request->filled('name')) {
-            $query->where('name', 'like', '%' . $request->name . '%');
+            $query->where('name', 'like', $request->name . '%');
         }
 
         $categories = $query
