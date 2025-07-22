@@ -16,7 +16,42 @@ class TransactionController extends Controller
 
     public function index(Request $request)
     {
-        return $this->response(200, TransactionResource::collection($request->user()->transactions()->orderByDesc('date')->get()));
+        $query = $request->user()->transactions();
+
+        // Filter by category
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        // Filter by description (partial search)
+        if ($request->filled('description')) {
+            $query->where('description', 'like', '%' . $request->description . '%');
+        }
+
+        // Filter by date (exact date)
+        if ($request->filled('date')) {
+            $query->whereDate('date', $request->date);
+        }
+
+        // Filter by period (date_from and date_to)
+        if ($request->filled('date_from')) {
+            $query->whereDate('date', '>=', $request->date_from);
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('date', '<=', $request->date_to);
+        }
+
+        // Filter by transaction type
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        $transactions = $query
+            ->orderByDesc('date')
+            ->orderByDesc('created_at')
+            ->paginate(10);
+
+        return $this->response(200, TransactionResource::collection($transactions));
     }
 
     public function store(StoreTransactionRequest $request)
