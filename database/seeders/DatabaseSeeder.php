@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
             $category->save();
         });
 
-        Transaction::factory(500)->make()->each(function ($transaction) {
+        Transaction::factory(2000)->make()->each(function ($transaction) {
             $user = User::inRandomOrder()->with(['categories'])->first();
             $category = $user->categories->random();
 
