@@ -11,10 +11,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('auth')->group(function () {
     Route::post('register', RegisterController::class);
     Route::post('login', LoginController::class);
-
-    Route::middleware('auth:sanctum', 'ability:api')->group(function () {
-        Route::delete('logout', LogoutController::class);
-    });
+    Route::delete('logout', LogoutController::class);
 
     Route::get('refresh-token', RefreshTokenController::class)->middleware('auth:sanctum', 'ability:refresh');
 });
