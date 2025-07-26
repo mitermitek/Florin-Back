@@ -7,6 +7,7 @@ use App\Http\Requests\API\Auth\LoginRequest;
 use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use App\Traits\ApiResponse;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 
 class LoginController extends Controller
@@ -22,11 +23,21 @@ class LoginController extends Controller
             return $this->response(401);
         }
 
-        $token = $user->createToken('FLR_PAT')->plainTextToken;
+        $personalAccessToken = $user->createToken(
+            'personal_access_token',
+            ['api'],
+            Carbon::now()->addMinutes(60)
+        )->plainTextToken;
+        $refreshToken = $user->createToken(
+            'refresh_token',
+            ['refresh'],
+            Carbon::now()->addDays(7)
+        )->plainTextToken;
 
         return $this->response(200, [
             'user' => new UserResource($user),
-            'token' => $token,
+            'personal_access_token' => $personalAccessToken,
+            'refresh_token' => $refreshToken
         ]);
     }
 }
