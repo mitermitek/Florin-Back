@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\API\V1\User;
+namespace App\Http\Requests\API\User;
 
 use App\Enums\TransactionType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateTransactionRequest extends FormRequest
+class UpdateUserTransactionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

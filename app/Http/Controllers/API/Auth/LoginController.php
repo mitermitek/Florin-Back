@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\API\V1\Auth;
+namespace App\Http\Controllers\API\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\API\V1\Auth\LoginRequest;
+use App\Http\Requests\API\Auth\LoginRequest;
 use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use App\Traits\ApiResponse;

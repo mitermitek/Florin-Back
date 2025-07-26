@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Http\Controllers\API\V1\User;
+namespace App\Http\Controllers\API\User;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\API\V1\User\StoreCategoryRequest;
-use App\Http\Requests\API\V1\User\UpdateCategoryRequest;
+use App\Http\Requests\API\User\StoreUserCategoryRequest;
+use App\Http\Requests\API\User\UpdateUserCategoryRequest;
 use App\Http\Resources\Category\CategoryResource;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 
-class CategoryController extends Controller
+class UserCategoryController extends Controller
 {
     use ApiResponse;
 
@@ -29,7 +29,7 @@ class CategoryController extends Controller
         return $this->response(200, CategoryResource::collection($categories));
     }
 
-    public function store(StoreCategoryRequest $request)
+    public function store(StoreUserCategoryRequest $request)
     {
         return $this->response(201, new CategoryResource($request->user()->categories()->create($request->validated())));
     }
@@ -45,7 +45,7 @@ class CategoryController extends Controller
         return $this->response(200, new CategoryResource($category));
     }
 
-    public function update(UpdateCategoryRequest $request, int $id)
+    public function update(UpdateUserCategoryRequest $request, int $id)
     {
         $category = $request->user()->categories()->find($id);
 

@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Http\Controllers\API\V1\User;
+namespace App\Http\Controllers\API\User;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\API\V1\User\StoreTransactionRequest;
-use App\Http\Requests\API\V1\User\UpdateTransactionRequest;
+use App\Http\Requests\API\User\StoreUserTransactionRequest;
+use App\Http\Requests\API\User\UpdateUserTransactionRequest;
 use App\Http\Resources\Transaction\TransactionResource;
 use App\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
-class TransactionController extends Controller
+class UserTransactionController extends Controller
 {
     use ApiResponse;
 
@@ -54,7 +54,7 @@ class TransactionController extends Controller
         return $this->response(200, TransactionResource::collection($transactions));
     }
 
-    public function store(StoreTransactionRequest $request)
+    public function store(StoreUserTransactionRequest $request)
     {
         $data = $request->validated();
 
@@ -78,7 +78,7 @@ class TransactionController extends Controller
         return $this->response(200, new TransactionResource($transaction));
     }
 
-    public function update(UpdateTransactionRequest $request, int $id)
+    public function update(UpdateUserTransactionRequest $request, int $id)
     {
         $transaction = $request->user()->transactions()->find($id);
 
