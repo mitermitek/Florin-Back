@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Florin-Back", "Florin-Back.csproj", "{FEE758D9-8D3B-79C6-5640-2551447A956A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FEE758D9-8D3B-79C6-5640-2551447A956A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEE758D9-8D3B-79C6-5640-2551447A956A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEE758D9-8D3B-79C6-5640-2551447A956A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEE758D9-8D3B-79C6-5640-2551447A956A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DAF58D3A-A425-466A-9041-2D3475EB62E5}
+	EndGlobalSection
+EndGlobal
