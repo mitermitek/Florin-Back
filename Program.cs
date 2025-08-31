@@ -17,6 +17,20 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddCors(opt =>
+{
+    var frontEndURL = builder.Configuration.GetValue<string>("CORS:FrontEndURL");
+    if (string.IsNullOrEmpty(frontEndURL))
+    {
+        throw new InvalidOperationException("CORS configuration is missing.");
+    }
+
+    opt.AddPolicy("CorsPolicy", policy =>
+    {
+        policy.WithOrigins(frontEndURL).AllowAnyHeader().AllowAnyMethod();
+    });
+});
+
 builder.Services.AddControllers();
 builder.Services.AddDbContext<FlorinDbContext>(opt =>
 {
@@ -85,6 +99,8 @@ if (app.Environment.IsDevelopment())
 
 // global error handler
 app.UseMiddleware<ExceptionMiddleware>();
+
+app.UseCors("CorsPolicy");
 
 app.UseHttpsRedirection();
 
