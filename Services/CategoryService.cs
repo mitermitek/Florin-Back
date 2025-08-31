@@ -18,6 +18,11 @@ public class CategoryService(ICategoryRepository categoryRepository) : ICategory
         return category;
     }
 
+    public async Task<Pagination<Category>> GetUserCategoriesAsync(long userId, int page, int size)
+    {
+        return await categoryRepository.GetCategoriesByUserIdAsync(userId, page, size);
+    }
+
     public async Task<Category> CreateUserCategoryAsync(long userId, Category category)
     {
         // check if category with the same name already exists for the user

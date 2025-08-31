@@ -5,6 +5,7 @@ namespace Florin_Back.Services.Interfaces;
 public interface ITransactionService
 {
     public Task<IEnumerable<Transaction>> GetUserTransactionsAsync(long userId);
+    public Task<Pagination<Transaction>> GetUserTransactionsAsync(long userId, int page, int size);
     public Task<Transaction?> GetUserTransactionByIdAsync(long userId, long transactionId);
     public Task<Transaction> CreateUserTransactionAsync(long userId, Transaction transaction);
     public Task<Transaction> UpdateUserTransactionAsync(long userId, long transactionId, Transaction transaction);

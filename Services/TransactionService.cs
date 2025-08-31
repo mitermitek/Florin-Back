@@ -12,6 +12,11 @@ public class TransactionService(ITransactionRepository transactionRepository, IC
         return transactionRepository.GetTransactionsByUserIdAsync(userId);
     }
 
+    public Task<Pagination<Transaction>> GetUserTransactionsAsync(long userId, int page, int size)
+    {
+        return transactionRepository.GetTransactionsByUserIdAsync(userId, page, size);
+    }
+
     public async Task<Transaction?> GetUserTransactionByIdAsync(long userId, long transactionId)
     {
         var transaction = await transactionRepository.GetTransactionByIdAndUserIdAsync(transactionId, userId) ?? throw new TransactionNotFoundException();

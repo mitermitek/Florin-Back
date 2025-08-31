@@ -1,5 +1,6 @@
 using AutoMapper;
 using Florin_Back.DTOs.UserTransaction;
+using Florin_Back.DTOs.Utility;
 using Florin_Back.Models;
 using Florin_Back.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -13,11 +14,11 @@ namespace Florin_Back.Controllers
     public class UserTransactionsController(IUserContextService userContextService, IMapper mapper, ITransactionService transactionService) : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> GetUserTransactions()
+        public async Task<IActionResult> GetUserTransactions([FromQuery] PaginationFiltersDTO pagination)
         {
             var userId = userContextService.GetUserId();
-            var userTransactions = await transactionService.GetUserTransactionsAsync(userId);
-            var userTransactionsDTO = mapper.Map<IEnumerable<UserTransactionDTO>>(userTransactions);
+            var userTransactions = await transactionService.GetUserTransactionsAsync(userId, pagination.Page, pagination.Size);
+            var userTransactionsDTO = mapper.Map<PaginationDTO<UserTransactionDTO>>(userTransactions);
 
             return Ok(userTransactionsDTO);
         }

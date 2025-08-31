@@ -12,6 +12,21 @@ public class TransactionRepository(FlorinDbContext ctx) : ITransactionRepository
         return await ctx.Transactions.Where(c => c.UserId == userId).OrderByDescending(c => c.Date).ToListAsync();
     }
 
+    public async Task<Pagination<Transaction>> GetTransactionsByUserIdAsync(long userId, int page, int size)
+    {
+        var query = ctx.Transactions.Where(c => c.UserId == userId).OrderByDescending(c => c.Date);
+        var total = await query.CountAsync();
+        var items = await query.Skip((page - 1) * size).Take(size).ToListAsync();
+
+        return new Pagination<Transaction>
+        {
+            Items = items,
+            Total = total,
+            Page = page,
+            Size = size
+        };
+    }
+
     public async Task<Transaction> CreateTransactionAsync(Transaction transaction)
     {
         ctx.Transactions.Add(transaction);

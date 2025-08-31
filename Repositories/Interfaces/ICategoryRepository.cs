@@ -5,6 +5,7 @@ namespace Florin_Back.Repositories.Interfaces;
 public interface ICategoryRepository
 {
     public Task<IEnumerable<Category>> GetCategoriesByUserIdAsync(long userId);
+    public Task<Pagination<Category>> GetCategoriesByUserIdAsync(long userId, int page, int size);
     public Task<Category> CreateCategoryAsync(Category category);
     public Task<Category?> GetCategoryByIdAndUserIdAsync(long id, long userId);
     public Task<Category> UpdateCategoryAsync(Category category);

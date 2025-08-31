@@ -1,5 +1,6 @@
 using AutoMapper;
 using Florin_Back.DTOs.Category;
+using Florin_Back.DTOs.Utility;
 using Florin_Back.Models;
 using Florin_Back.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -13,11 +14,11 @@ namespace Florin_Back.Controllers
     public class UserCategoriesController(IUserContextService userContextService, IMapper mapper, ICategoryService categoryService) : ControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> GetUserCategories()
+        public async Task<IActionResult> GetUserCategories([FromQuery] PaginationFiltersDTO pagination)
         {
             var userId = userContextService.GetUserId();
-            var userCategories = await categoryService.GetUserCategoriesAsync(userId);
-            var userCategoriesDTO = mapper.Map<IEnumerable<UserCategoryDTO>>(userCategories);
+            var userCategories = await categoryService.GetUserCategoriesAsync(userId, pagination.Page, pagination.Size);
+            var userCategoriesDTO = mapper.Map<PaginationDTO<UserCategoryDTO>>(userCategories);
 
             return Ok(userCategoriesDTO);
         }
