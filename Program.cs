@@ -1,6 +1,7 @@
 using System.Text;
 using Florin_Back.Data;
 using Florin_Back.Mappings;
+using Florin_Back.Middlewares;
 using Florin_Back.Models;
 using Florin_Back.Repositories;
 using Florin_Back.Repositories.Interfaces;
@@ -79,6 +80,9 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
+
+// global error handler
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
