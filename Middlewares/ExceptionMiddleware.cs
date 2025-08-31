@@ -1,6 +1,7 @@
 using Florin_Back.Exceptions.Auth;
 using Florin_Back.Exceptions.Category;
 using Florin_Back.Exceptions.RefreshToken;
+using Florin_Back.Exceptions.Transaction;
 using Florin_Back.Exceptions.User;
 
 namespace Florin_Back.Middlewares;
@@ -33,7 +34,7 @@ public class ExceptionMiddleware(RequestDelegate next)
         {
             BadCredentialsException => StatusCodes.Status401Unauthorized,
             InvalidRefreshTokenException => StatusCodes.Status403Forbidden,
-            RefreshTokenNotFoundException or CategoryNotFoundException => StatusCodes.Status404NotFound,
+            RefreshTokenNotFoundException or CategoryNotFoundException or TransactionNotFoundException or TransactionTypeNotFoundException => StatusCodes.Status404NotFound,
             UserAlreadyExistsException or CategoryAlreadyExistsException => StatusCodes.Status409Conflict,
             _ => StatusCodes.Status500InternalServerError,
         };
