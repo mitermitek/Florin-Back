@@ -6,14 +6,13 @@ namespace Florin_Back.Data;
 public class FlorinDbContext(DbContextOptions<FlorinDbContext> opt) : DbContext(opt)
 {
     public DbSet<User> Users { get; set; }
-    public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Transaction> Transactions { get; set; }
 
     public override int SaveChanges()
     {
         var entries = ChangeTracker.Entries()
-            .Where(e => e.Entity is User || e.Entity is RefreshToken && (e.State == EntityState.Added || e.State == EntityState.Modified));
+            .Where(e => e.Entity is User && (e.State == EntityState.Added || e.State == EntityState.Modified));
 
         foreach (var entry in entries)
         {
@@ -32,7 +31,7 @@ public class FlorinDbContext(DbContextOptions<FlorinDbContext> opt) : DbContext(
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         var entries = ChangeTracker.Entries()
-            .Where(e => e.Entity is User || e.Entity is RefreshToken && (e.State == EntityState.Added || e.State == EntityState.Modified));
+            .Where(e => e.Entity is User && (e.State == EntityState.Added || e.State == EntityState.Modified));
 
         foreach (var entry in entries)
         {

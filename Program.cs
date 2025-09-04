@@ -1,4 +1,3 @@
-using System.Text;
 using Florin_Back.Data;
 using Florin_Back.Mappings;
 using Florin_Back.Middlewares;
@@ -7,10 +6,9 @@ using Florin_Back.Repositories;
 using Florin_Back.Repositories.Interfaces;
 using Florin_Back.Services;
 using Florin_Back.Services.Interfaces;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,7 +25,10 @@ builder.Services.AddCors(opt =>
 
     opt.AddPolicy("CorsPolicy", policy =>
     {
-        policy.WithOrigins(frontEndURL).AllowAnyHeader().AllowAnyMethod();
+        policy.WithOrigins(frontEndURL)
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -37,28 +38,29 @@ builder.Services.AddDbContext<FlorinDbContext>(opt =>
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
     opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-{
-    var jwtValidIssuer = builder.Configuration.GetValue<string>("JWT:ValidIssuer");
-    var jwtValidAudience = builder.Configuration.GetValue<string>("JWT:ValidAudience");
-    var jwtSecret = builder.Configuration.GetValue<string>("JWT:Secret");
-
-    if (string.IsNullOrEmpty(jwtSecret) || string.IsNullOrEmpty(jwtValidIssuer) || string.IsNullOrEmpty(jwtValidAudience))
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(opt =>
     {
-        throw new InvalidOperationException("JWT configuration is missing.");
-    }
+        opt.Cookie.HttpOnly = true;
+        opt.Cookie.SameSite = SameSiteMode.Strict;
+        opt.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        opt.Cookie.Name = "florin";
+        opt.ExpireTimeSpan = TimeSpan.FromMinutes(15);
+        opt.SlidingExpiration = true;
+        opt.Cookie.IsEssential = true;
+        opt.Cookie.MaxAge = TimeSpan.FromDays(7);
 
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtValidIssuer,
-        ValidAudience = jwtValidAudience,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret))
-    };
-});
+        opt.Events.OnRedirectToLogin = context =>
+        {
+            context.Response.StatusCode = 401;
+            return Task.CompletedTask;
+        };
+        opt.Events.OnRedirectToAccessDenied = context =>
+        {
+            context.Response.StatusCode = 403;
+            return Task.CompletedTask;
+        };
+    });
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -77,13 +79,11 @@ builder.Services.AddScoped<IUserContextService, UserContextService>();
 
 // services
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IRefreshTokenService, RefreshTokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ITransactionService, TransactionService>();
 
 // repositories
-builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
@@ -104,6 +104,7 @@ app.UseCors("CorsPolicy");
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

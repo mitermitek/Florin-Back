@@ -1,21 +1,20 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Florin_Back.Exceptions.Auth;
-using Florin_Back.Exceptions.RefreshToken;
 using Florin_Back.Models;
 using Florin_Back.Services.Interfaces;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Florin_Back.Services;
 
-public class AuthService(IConfiguration configuration, IUserService userService, IRefreshTokenService refreshTokenService) : IAuthService
+public class AuthService(IHttpContextAccessor httpContextAccessor, IUserService userService) : IAuthService
 {
     public async Task<User> RegisterAsync(User user)
     {
         return await userService.CreateUserAsync(user);
     }
 
-    public async Task<User> LoginAsync(User user)
+    public async Task LoginAsync(User user)
     {
         User? existingUser = await userService.GetUserByEmailAsync(user.Email);
         if (existingUser == null || !userService.VerifyPassword(existingUser, user.Password))
@@ -23,70 +22,19 @@ public class AuthService(IConfiguration configuration, IUserService userService,
             throw new BadCredentialsException();
         }
 
-        return existingUser;
-    }
-
-    public string GenerateAccessToken(User user)
-    {
-        return GenerateJwtToken(user);
-    }
-
-    public async Task<string> GenerateRefreshTokenAsync(User user)
-    {
-        var refreshToken = await refreshTokenService.CreateRefreshTokenAsync(user);
-        return refreshToken.Token;
-    }
-
-    public async Task<string> RefreshAccessTokenAsync(string refreshToken)
-    {
-        var existingRefreshToken = await refreshTokenService.GetRefreshTokenByTokenAsync(refreshToken);
-        if (existingRefreshToken == null || existingRefreshToken.RevokedAt != null || existingRefreshToken.ExpiresAt < DateTime.UtcNow)
-        {
-            throw new InvalidRefreshTokenException();
-        }
-
-        var user = await userService.GetUserByIdAsync(existingRefreshToken.UserId) ?? throw new InvalidRefreshTokenException();
-
-        return GenerateJwtToken(user);
-    }
-
-    public async Task LogoutAsync(string refreshToken)
-    {
-        var existingRefreshToken = await refreshTokenService.GetRefreshTokenByTokenAsync(refreshToken);
-        if (existingRefreshToken == null || existingRefreshToken.RevokedAt != null || existingRefreshToken.ExpiresAt < DateTime.UtcNow)
-        {
-            throw new InvalidRefreshTokenException();
-        }
-
-        await refreshTokenService.RevokeRefreshTokenAsync(existingRefreshToken);
-    }
-
-    private string GenerateJwtToken(User user)
-    {
-        var jwtSecret = configuration.GetValue<string>("JWT:Secret");
-        var jwtValidIssuer = configuration.GetValue<string>("JWT:ValidIssuer");
-        var jwtValidAudience = configuration.GetValue<string>("JWT:ValidAudience");
-
-        if (string.IsNullOrEmpty(jwtSecret) || string.IsNullOrEmpty(jwtValidIssuer) || string.IsNullOrEmpty(jwtValidAudience))
-        {
-            throw new InvalidOperationException("JWT configuration is missing.");
-        }
-
         var claims = new[]
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            new Claim(ClaimTypes.NameIdentifier, existingUser.Id.ToString())
         };
-        var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtSecret));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var token = new JwtSecurityToken(
-            issuer: jwtValidIssuer,
-            audience: jwtValidAudience,
-            claims: claims,
-            expires: DateTime.Now.AddMinutes(10),
-            signingCredentials: creds
-        );
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var principal = new ClaimsPrincipal(identity);
+        var authProperties = new AuthenticationProperties { };
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        await httpContextAccessor.HttpContext!.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
+    }
+
+    public async Task LogoutAsync()
+    {
+        await httpContextAccessor.HttpContext!.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
     }
 }
