@@ -26,36 +26,17 @@ namespace Florin_Back.Controllers
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
         {
             var mapperUser = mapper.Map<User>(loginDto);
-            var authenticatedUser = await authService.LoginAsync(mapperUser);
-            var accessToken = authService.GenerateAccessToken(authenticatedUser);
-            var refreshToken = await authService.GenerateRefreshTokenAsync(authenticatedUser);
-            var tokensDto = new TokensDTO
-            {
-                AccessToken = accessToken,
-                RefreshToken = refreshToken
-            };
+            await authService.LoginAsync(mapperUser);
 
-            return Ok(tokensDto);
-        }
-
-        [HttpPost(nameof(RefreshAccessToken))]
-        public async Task<IActionResult> RefreshAccessToken([FromBody] RefreshTokenDTO refreshTokenDto)
-        {
-            var accessToken = await authService.RefreshAccessTokenAsync(refreshTokenDto.RefreshToken);
-            var tokenDto = new TokensDTO
-            {
-                AccessToken = accessToken,
-                RefreshToken = refreshTokenDto.RefreshToken
-            };
-
-            return Ok(tokenDto);
+            return NoContent();
         }
 
         [HttpDelete(nameof(Logout))]
         [Authorize]
-        public async Task<IActionResult> Logout([FromBody] RefreshTokenDTO refreshTokenDto)
+        public async Task<IActionResult> Logout()
         {
-            await authService.LogoutAsync(refreshTokenDto.RefreshToken);
+            await authService.LogoutAsync();
+
             return NoContent();
         }
     }
