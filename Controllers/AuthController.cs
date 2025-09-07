@@ -26,9 +26,10 @@ namespace Florin_Back.Controllers
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
         {
             var mapperUser = mapper.Map<User>(loginDto);
-            await authService.LoginAsync(mapperUser);
+            var user = await authService.LoginAsync(mapperUser);
+            var userDto = mapper.Map<UserDTO>(user);
 
-            return NoContent();
+            return Ok(userDto);
         }
 
         [HttpDelete(nameof(Logout))]
@@ -38,6 +39,16 @@ namespace Florin_Back.Controllers
             await authService.LogoutAsync();
 
             return NoContent();
+        }
+
+        [HttpGet(nameof(Status))]
+        [Authorize]
+        public async Task<IActionResult> Status()
+        {
+            var user = await authService.GetCurrentUserAsync();
+            var userDto = mapper.Map<UserDTO>(user);
+
+            return Ok(userDto);
         }
     }
 }

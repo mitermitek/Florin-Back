@@ -7,14 +7,14 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace Florin_Back.Services;
 
-public class AuthService(IHttpContextAccessor httpContextAccessor, IUserService userService) : IAuthService
+public class AuthService(IHttpContextAccessor httpContextAccessor, IUserContextService userContextService, IUserService userService) : IAuthService
 {
     public async Task<User> RegisterAsync(User user)
     {
         return await userService.CreateUserAsync(user);
     }
 
-    public async Task LoginAsync(User user)
+    public async Task<User> LoginAsync(User user)
     {
         User? existingUser = await userService.GetUserByEmailAsync(user.Email);
         if (existingUser == null || !userService.VerifyPassword(existingUser, user.Password))
@@ -31,10 +31,17 @@ public class AuthService(IHttpContextAccessor httpContextAccessor, IUserService 
         var authProperties = new AuthenticationProperties { };
 
         await httpContextAccessor.HttpContext!.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, authProperties);
+        return existingUser;
     }
 
     public async Task LogoutAsync()
     {
         await httpContextAccessor.HttpContext!.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+    }
+
+    public async Task<User> GetCurrentUserAsync()
+    {
+        var userId = userContextService.GetUserId();
+        return await userService.GetUserByIdAsync(userId);
     }
 }

@@ -35,8 +35,8 @@ public class UserService(IPasswordHasher<User> passwordHasher, IUserRepository u
         return passwordHasher.VerifyHashedPassword(user, user.Password, password) == PasswordVerificationResult.Success;
     }
 
-    public async Task<User?> GetUserByIdAsync(long id)
+    public async Task<User> GetUserByIdAsync(long id)
     {
-        return await userRepository.GetUserByIdAsync(id);
+        return await userRepository.GetUserByIdAsync(id) ?? throw new UserNotFoundException();
     }
 }

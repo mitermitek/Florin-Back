@@ -8,5 +8,5 @@ public interface IUserService
     Task<bool> UserExistsAsync(string username, string email);
     Task<User?> GetUserByEmailAsync(string email);
     bool VerifyPassword(User user, string password);
-    Task<User?> GetUserByIdAsync(long id);
+    Task<User> GetUserByIdAsync(long id);
 }
