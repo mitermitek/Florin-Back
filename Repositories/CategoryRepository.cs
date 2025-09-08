@@ -12,9 +12,17 @@ public class CategoryRepository(FlorinDbContext ctx) : ICategoryRepository
         return await ctx.Categories.Where(c => c.UserId == userId).OrderBy(c => c.Name).ToListAsync();
     }
 
-    public async Task<Pagination<Category>> GetCategoriesByUserIdAsync(long userId, int page, int size)
+    public async Task<Pagination<Category>> GetCategoriesByUserIdAsync(long userId, int page, int size, CategoryFilters filters)
     {
-        var query = ctx.Categories.Where(c => c.UserId == userId).OrderBy(c => c.Name);
+        var query = ctx.Categories.Where(c => c.UserId == userId).AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(filters.Name))
+        {
+            query = query.Where(c => c.Name.Contains(filters.Name));
+        }
+
+        query = query.OrderBy(c => c.Name);
+
         var total = await query.CountAsync();
         var items = await query.Skip((page - 1) * size).Take(size).ToListAsync();
 

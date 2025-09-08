@@ -2,6 +2,7 @@ using AutoMapper;
 using Florin_Back.DTOs.Auth;
 using Florin_Back.DTOs.Category;
 using Florin_Back.DTOs.User;
+using Florin_Back.DTOs.UserCategory;
 using Florin_Back.DTOs.UserTransaction;
 using Florin_Back.DTOs.Utility;
 using Florin_Back.Models;
@@ -22,6 +23,8 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
         CreateMap<CreateUserCategoryDTO, Category>();
         CreateMap<UpdateUserCategoryDTO, Category>();
+
+        CreateMap<UserCategoryFiltersDTO, CategoryFilters>();
 
         CreateMap<Transaction, UserTransactionDTO>();
         CreateMap<Pagination<Transaction>, PaginationDTO<UserTransactionDTO>>()

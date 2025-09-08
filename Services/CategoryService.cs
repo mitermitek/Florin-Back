@@ -18,9 +18,9 @@ public class CategoryService(ICategoryRepository categoryRepository) : ICategory
         return category;
     }
 
-    public async Task<Pagination<Category>> GetUserCategoriesAsync(long userId, int page, int size)
+    public async Task<Pagination<Category>> GetUserCategoriesAsync(long userId, int page, int size, CategoryFilters filters)
     {
-        return await categoryRepository.GetCategoriesByUserIdAsync(userId, page, size);
+        return await categoryRepository.GetCategoriesByUserIdAsync(userId, page, size, filters);
     }
 
     public async Task<Category> CreateUserCategoryAsync(long userId, Category category)
