@@ -1,7 +1,7 @@
 using AutoMapper;
-using Florin_Back.DTOs.Auth;
-using Florin_Back.DTOs.User;
-using Florin_Back.Models;
+using Florin_Back.Models.DTOs.User;
+using Florin_Back.Models.DTOs.Auth;
+using Florin_Back.Models.Entities;
 using Florin_Back.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,21 +15,21 @@ namespace Florin_Back.Controllers
         [HttpPost(nameof(Register))]
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDto)
         {
-            var mappedUser = mapper.Map<User>(registerDto);
-            var registeredUser = await authService.RegisterAsync(mappedUser);
-            var userDto = mapper.Map<UserDTO>(registeredUser);
+            var userToRegister = mapper.Map<User>(registerDto);
+            var registeredUser = await authService.RegisterAsync(userToRegister);
+            var userDTO = mapper.Map<UserDTO>(registeredUser);
 
-            return CreatedAtAction(nameof(Register), userDto);
+            return CreatedAtAction(nameof(Register), userDTO);
         }
 
         [HttpPost(nameof(Login))]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
         {
-            var mapperUser = mapper.Map<User>(loginDto);
-            var user = await authService.LoginAsync(mapperUser);
-            var userDto = mapper.Map<UserDTO>(user);
+            var userToLogIn = mapper.Map<User>(loginDto);
+            var user = await authService.LoginAsync(userToLogIn);
+            var userDTO = mapper.Map<UserDTO>(user);
 
-            return Ok(userDto);
+            return Ok(userDTO);
         }
 
         [HttpDelete(nameof(Logout))]
@@ -45,10 +45,10 @@ namespace Florin_Back.Controllers
         [Authorize]
         public async Task<IActionResult> Status()
         {
-            var user = await authService.GetCurrentUserAsync();
-            var userDto = mapper.Map<UserDTO>(user);
+            var currentUser = await authService.GetCurrentUserAsync();
+            var currentUserDTO = mapper.Map<UserDTO>(currentUser);
 
-            return Ok(userDto);
+            return Ok(currentUserDTO);
         }
     }
 }

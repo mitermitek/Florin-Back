@@ -1,11 +1,10 @@
 using AutoMapper;
-using Florin_Back.DTOs.Auth;
-using Florin_Back.DTOs.Category;
-using Florin_Back.DTOs.User;
-using Florin_Back.DTOs.UserCategory;
-using Florin_Back.DTOs.UserTransaction;
-using Florin_Back.DTOs.Utility;
-using Florin_Back.Models;
+using Florin_Back.Models.DTOs.Auth;
+using Florin_Back.Models.DTOs.Category;
+using Florin_Back.Models.DTOs.Transaction;
+using Florin_Back.Models.DTOs.User;
+using Florin_Back.Models.Entities;
+using Florin_Back.Models.Utilities;
 
 namespace Florin_Back.Mappings;
 
@@ -18,18 +17,16 @@ public class MappingProfile : Profile
 
         CreateMap<User, UserDTO>();
 
-        CreateMap<Category, UserCategoryDTO>();
-        CreateMap<Pagination<Category>, PaginationDTO<UserCategoryDTO>>()
+        CreateMap<Category, CategoryDTO>();
+        CreateMap<Pagination<Category>, Pagination<CategoryDTO>>()
             .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
-        CreateMap<CreateUserCategoryDTO, Category>();
-        CreateMap<UpdateUserCategoryDTO, Category>();
+        CreateMap<CreateCategoryDTO, Category>();
+        CreateMap<UpdateCategoryDTO, Category>();
 
-        CreateMap<UserCategoryFiltersDTO, CategoryFilters>();
-
-        CreateMap<Transaction, UserTransactionDTO>();
-        CreateMap<Pagination<Transaction>, PaginationDTO<UserTransactionDTO>>()
+        CreateMap<Transaction, TransactionDTO>();
+        CreateMap<Pagination<Transaction>, Pagination<TransactionDTO>>()
             .ForMember(dest => dest.Items, opt => opt.MapFrom(src => src.Items));
-        CreateMap<CreateUserTransactionDTO, Transaction>();
-        CreateMap<UpdateUserTransactionDTO, Transaction>();
+        CreateMap<CreateTransactionDTO, Transaction>();
+        CreateMap<UpdateTransactionDTO, Transaction>();
     }
 }

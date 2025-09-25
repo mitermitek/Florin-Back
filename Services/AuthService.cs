@@ -1,6 +1,6 @@
 using System.Security.Claims;
 using Florin_Back.Exceptions.Auth;
-using Florin_Back.Models;
+using Florin_Back.Models.Entities;
 using Florin_Back.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;

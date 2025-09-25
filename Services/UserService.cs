@@ -1,5 +1,5 @@
 using Florin_Back.Exceptions.User;
-using Florin_Back.Models;
+using Florin_Back.Models.Entities;
 using Florin_Back.Repositories.Interfaces;
 using Florin_Back.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;

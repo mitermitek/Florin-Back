@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Florin_Back.Enums;
 
-namespace Florin_Back.Models;
+namespace Florin_Back.Models.Entities;
 
 public class Transaction
 {

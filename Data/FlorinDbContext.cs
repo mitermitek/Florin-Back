@@ -1,4 +1,4 @@
-using Florin_Back.Models;
+using Florin_Back.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Florin_Back.Data;

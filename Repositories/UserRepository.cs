@@ -1,5 +1,5 @@
 using Florin_Back.Data;
-using Florin_Back.Models;
+using Florin_Back.Models.Entities;
 using Florin_Back.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 

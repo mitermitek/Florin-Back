@@ -1,7 +1,7 @@
 using Florin_Back.Data;
 using Florin_Back.Mappings;
 using Florin_Back.Middlewares;
-using Florin_Back.Models;
+using Florin_Back.Models.Entities;
 using Florin_Back.Repositories;
 using Florin_Back.Repositories.Interfaces;
 using Florin_Back.Services;
@@ -36,7 +36,10 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<FlorinDbContext>(opt =>
 {
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-    opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
+    opt.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString), options =>
+    {
+        options.EnableStringComparisonTranslations();
+    });
 });
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(opt =>

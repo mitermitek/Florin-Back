@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Florin_Back.Models;
+namespace Florin_Back.Models.Entities;
 
 public class Category
 {

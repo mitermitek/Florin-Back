@@ -1,6 +1,6 @@
-namespace Florin_Back.DTOs.Category;
+namespace Florin_Back.Models.DTOs.Category;
 
-public class UserCategoryDTO
+public class CategoryDTO
 {
     public long Id { get; set; }
     public required string Name { get; set; }

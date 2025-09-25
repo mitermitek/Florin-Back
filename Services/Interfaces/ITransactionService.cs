@@ -1,13 +1,14 @@
-using Florin_Back.Models;
+using Florin_Back.Models.Entities;
+using Florin_Back.Models.Utilities;
+using Florin_Back.Models.Utilities.Filters;
 
 namespace Florin_Back.Services.Interfaces;
 
 public interface ITransactionService
 {
-    public Task<IEnumerable<Transaction>> GetUserTransactionsAsync(long userId);
-    public Task<Pagination<Transaction>> GetUserTransactionsAsync(long userId, int page, int size);
-    public Task<Transaction?> GetUserTransactionByIdAsync(long userId, long transactionId);
-    public Task<Transaction> CreateUserTransactionAsync(long userId, Transaction transaction);
-    public Task<Transaction> UpdateUserTransactionAsync(long userId, long transactionId, Transaction transaction);
-    public Task DeleteUserTransactionAsync(long userId, long transactionId);
+    public Task<Pagination<Transaction>> GetUserTransactionsAsync(PaginationFilters pagination, TransactionFilters filters);
+    public Task<Transaction?> GetUserTransactionAsync(long transactionId);
+    public Task<Transaction> CreateUserTransactionAsync(Transaction transaction);
+    public Task<Transaction> UpdateUserTransactionAsync(long transactionId, Transaction transaction);
+    public Task DeleteUserTransactionAsync(long transactionId);
 }

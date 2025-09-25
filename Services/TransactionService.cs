@@ -1,51 +1,45 @@
 using Florin_Back.Exceptions.Transaction;
-using Florin_Back.Models;
+using Florin_Back.Models.Entities;
+using Florin_Back.Models.Utilities;
+using Florin_Back.Models.Utilities.Filters;
 using Florin_Back.Repositories.Interfaces;
 using Florin_Back.Services.Interfaces;
 
 namespace Florin_Back.Services;
 
-public class TransactionService(ITransactionRepository transactionRepository, ICategoryService categoryService) : ITransactionService
+public class TransactionService(IUserContextService userContextService, ITransactionRepository transactionRepository, ICategoryService categoryService) : ITransactionService
 {
-    public Task<IEnumerable<Transaction>> GetUserTransactionsAsync(long userId)
+    public async Task<Pagination<Transaction>> GetUserTransactionsAsync(PaginationFilters pagination, TransactionFilters filters)
     {
-        return transactionRepository.GetTransactionsByUserIdAsync(userId);
+        var userId = userContextService.GetUserId();
+
+        return await transactionRepository.GetTransactionsByUserIdAsync(userId, pagination, filters);
     }
 
-    public Task<Pagination<Transaction>> GetUserTransactionsAsync(long userId, int page, int size)
+    public async Task<Transaction?> GetUserTransactionAsync(long transactionId)
     {
-        return transactionRepository.GetTransactionsByUserIdAsync(userId, page, size);
-    }
+        var userId = userContextService.GetUserId();
+        var transaction = await transactionRepository.GetTransactionByUserIdAsync(transactionId, userId) ?? throw new TransactionNotFoundException();
 
-    public async Task<Transaction?> GetUserTransactionByIdAsync(long userId, long transactionId)
-    {
-        var transaction = await transactionRepository.GetTransactionByIdAndUserIdAsync(transactionId, userId) ?? throw new TransactionNotFoundException();
         return transaction;
     }
 
-    public async Task<Transaction> CreateUserTransactionAsync(long userId, Transaction transaction)
+    public async Task<Transaction> CreateUserTransactionAsync(Transaction transaction)
     {
-        // check if transaction type exists
-        CheckTransactionTypeExists(transaction);
-
-        // get category to ensure it belongs to the user
-        var existingCategory = await categoryService.GetUserCategoryByIdAsync(userId, transaction.CategoryId);
+        var userId = userContextService.GetUserId();
+        var existingCategory = await categoryService.GetUserCategoryAsync(transaction.CategoryId);
 
         transaction.UserId = userId;
         transaction.Category = existingCategory;
+
         return await transactionRepository.CreateTransactionAsync(transaction);
     }
 
-    public async Task<Transaction> UpdateUserTransactionAsync(long userId, long transactionId, Transaction transaction)
+    public async Task<Transaction> UpdateUserTransactionAsync(long transactionId, Transaction transaction)
     {
-        // check if transaction type exists
-        CheckTransactionTypeExists(transaction);
-
-        // get category to ensure it belongs to the user
-        var existingCategory = await categoryService.GetUserCategoryByIdAsync(userId, transaction.CategoryId);
-
-        // check if transaction exists
-        var existingTransaction = await transactionRepository.GetTransactionByIdAndUserIdAsync(transactionId, userId) ?? throw new TransactionNotFoundException();
+        var userId = userContextService.GetUserId();
+        var existingCategory = await categoryService.GetUserCategoryAsync(transaction.CategoryId);
+        var existingTransaction = await transactionRepository.GetTransactionByUserIdAsync(transactionId, userId) ?? throw new TransactionNotFoundException();
 
         existingTransaction.CategoryId = transaction.CategoryId;
         existingTransaction.Category = existingCategory;
@@ -53,21 +47,15 @@ public class TransactionService(ITransactionRepository transactionRepository, IC
         existingTransaction.Date = transaction.Date;
         existingTransaction.Amount = transaction.Amount;
         existingTransaction.Description = transaction.Description;
+
         return await transactionRepository.UpdateTransactionAsync(existingTransaction);
     }
 
-    public async Task DeleteUserTransactionAsync(long userId, long transactionId)
+    public async Task DeleteUserTransactionAsync(long transactionId)
     {
-        var transaction = await transactionRepository.GetTransactionByIdAndUserIdAsync(transactionId, userId) ?? throw new TransactionNotFoundException();
+        var userId = userContextService.GetUserId();
+        var transaction = await transactionRepository.GetTransactionByUserIdAsync(transactionId, userId) ?? throw new TransactionNotFoundException();
 
         await transactionRepository.DeleteTransactionAsync(transaction);
-    }
-
-    private static void CheckTransactionTypeExists(Transaction transaction)
-    {
-        if (!Enum.IsDefined(transaction.Type))
-        {
-            throw new TransactionTypeNotFoundException();
-        }
     }
 }
