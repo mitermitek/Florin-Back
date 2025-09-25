@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Florin_Back.DTOs.Utility;
+namespace Florin_Back.Models.Utilities.Filters;
 
-public class PaginationFiltersDTO
+public class PaginationFilters
 {
     [Range(1, int.MaxValue, ErrorMessage = "Page must be greater than 0")]
     public int Page { get; set; } = 1;

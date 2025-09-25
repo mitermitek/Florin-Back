@@ -1,7 +1,7 @@
 using AutoMapper;
-using Florin_Back.DTOs.Auth;
-using Florin_Back.DTOs.User;
-using Florin_Back.Models;
+using Florin_Back.Models.DTOs.User;
+using Florin_Back.Models.DTOs.Auth;
+using Florin_Back.Models.Entities;
 using Florin_Back.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,8 +15,8 @@ namespace Florin_Back.Controllers
         [HttpPost(nameof(Register))]
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDto)
         {
-            var mappedUser = mapper.Map<User>(registerDto);
-            var registeredUser = await authService.RegisterAsync(mappedUser);
+            var userToRegister = mapper.Map<User>(registerDto);
+            var registeredUser = await authService.RegisterAsync(userToRegister);
             var userDto = mapper.Map<UserDTO>(registeredUser);
 
             return CreatedAtAction(nameof(Register), userDto);
@@ -45,10 +45,10 @@ namespace Florin_Back.Controllers
         [Authorize]
         public async Task<IActionResult> Status()
         {
-            var user = await authService.GetCurrentUserAsync();
-            var userDto = mapper.Map<UserDTO>(user);
+            var currentUser = await authService.GetCurrentUserAsync();
+            var currentUserDto = mapper.Map<UserDTO>(currentUser);
 
-            return Ok(userDto);
+            return Ok(currentUserDto);
         }
     }
 }

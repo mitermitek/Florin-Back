@@ -1,4 +1,4 @@
-namespace Florin_Back.Models;
+namespace Florin_Back.Models.Entities;
 
 public class User
 {

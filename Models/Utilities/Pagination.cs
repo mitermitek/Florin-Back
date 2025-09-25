@@ -1,4 +1,4 @@
-namespace Florin_Back.Models;
+namespace Florin_Back.Models.Utilities;
 
 public class Pagination<T>
 {

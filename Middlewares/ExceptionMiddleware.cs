@@ -32,7 +32,7 @@ public class ExceptionMiddleware(RequestDelegate next)
         context.Response.StatusCode = exception switch
         {
             BadCredentialsException => StatusCodes.Status401Unauthorized,
-            CategoryNotFoundException or TransactionNotFoundException or TransactionTypeNotFoundException => StatusCodes.Status404NotFound,
+            CategoryNotFoundException or TransactionNotFoundException => StatusCodes.Status404NotFound,
             UserAlreadyExistsException or CategoryAlreadyExistsException => StatusCodes.Status409Conflict,
             _ => StatusCodes.Status500InternalServerError,
         };

@@ -1,4 +1,4 @@
-using Florin_Back.Models;
+using Florin_Back.Models.Entities;
 
 namespace Florin_Back.Repositories.Interfaces;
 
