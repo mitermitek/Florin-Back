@@ -12,8 +12,8 @@ public class Transaction
     public DateOnly Date { get; set; }
     public decimal Amount { get; set; }
     public string? Description { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
     [ForeignKey(nameof(UserId))]
     public User? User { get; set; }

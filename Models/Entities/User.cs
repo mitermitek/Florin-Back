@@ -8,4 +8,7 @@ public class User
     public required string Password { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+    public ICollection<Transaction> Transactions { get; set; } = [];
+    public ICollection<Category> Categories { get; set; } = [];
 }
