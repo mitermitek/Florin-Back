@@ -1,5 +1,3 @@
-using System;
-
 namespace Florin_Back.Exceptions.Auth;
 
 public class BadCredentialsException : Exception
